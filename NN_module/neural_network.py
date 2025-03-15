@@ -25,8 +25,14 @@ class NN :
     def predict(self, X) : 
         y_cap=self.layers[0].forward_propagation(X, self)
         return y_cap
-    
-    def fit(self, X, Y, epochs=100, learning_rate = 1,decay = 0.001, momentum = 0, print_cost=False) :
+    #
+    def regularization_cost(self) :
+        cost = 0
+        for i in range(self.num_layers) :
+            cost += self.layers[i].regularization_penalty()
+        return cost
+    #
+    def fit(self, X, Y, epochs=100, learning_rate = 1,decay = 0.001, momentum = 0, get_log=False) :
         self.m = X.shape[0]
         n = X.shape[1]
         self.layers[0].init_layer(n)
@@ -41,8 +47,8 @@ class NN :
             #forward propagation with the inputs
             y_cap=self.predict(X)
             #computation of the cost generated
-            cost=self.J.compute_cost(y_cap, Y)
-            if(print_cost and i%(epochs/10)==0) :
+            cost=self.J.compute_cost(y_cap, Y) + self.regularization_cost()
+            if(get_log and i%(epochs/10)==0) :
                 print(cost,'\n')
             grad=self.J.get_grad(y_cap,Y) # m*nk m =no. of sample  / nk = units in last layer
             self.layers[self.num_layers-1].backward_propagation(grad, self)
