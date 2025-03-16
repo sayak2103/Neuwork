@@ -12,9 +12,7 @@ class Losses :
     #each  loss function is desigened as seperate class
     class Mse :
         def compute_cost(self, y_cap, y) :
-            if(y_cap.shape[0] != y.shape[0] or y_cap.shape[1] != y.shape[1] ) :
-                raise Exception('dimension mismatch error of y_cap and Y')
-            cost = np.mean((y_cap-y)**2, axis=-1)
+            cost = np.mean((y_cap-y)**2)
             return cost
 
         def get_grad(self, y_cap, y) :
