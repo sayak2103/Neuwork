@@ -24,8 +24,8 @@ class Dense :
         self.W_momentum = np.zeros_like(self.W)
         self.b_momentum = np.zeros_like(self.b)
     #
-    def set_layer_momentum(self, m) :
-        self.layer_momentum = m
+    #def set_layer_momentum(self, m) :
+    #    self.layer_momentum = m
     #
     #function for forward propagation
     def forward_propagation(self, X, nn) :
@@ -76,10 +76,10 @@ class Dense :
             self.db +=dL2
         
         #next_grad /= self.n #this is a mistake don't uncomment, just think why it's wrong ;)
-        if hasattr(self, 'layer_momentum') :
-            self.update_parameters(nn.l_rate, self.layer_momentum)
-        else :
-            self.update_parameters(nn.l_rate, nn.momentum)
+        #if hasattr(self, 'layer_momentum') :
+        #   self.update_parameters(nn.l_rate, self.layer_momentum)
+        #else :
+        #    self.update_parameters(nn.l_rate, nn.momentum)
         if(self.idx > 0) :
             nn.layers[self.idx - 1].backward_propagation(dinputs, nn)
         #
