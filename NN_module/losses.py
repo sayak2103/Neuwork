@@ -2,11 +2,11 @@
 import numpy as np
 class Losses :
     def get_loss(self, loss) :
-        if(loss == 'mse') :
+        if(loss == 'mean_squared_error') :
             return Losses().Mse()
-        elif(loss == 'categoricalCrossentropy') :
+        elif(loss == 'categorical_crossentropy') :
             return Losses().Cce()
-        elif(loss == 'binaryCrossentropy') :
+        elif(loss == 'binary_crossentropy') :
             return Losses().Bce()
     
     #each  loss function is desigened as seperate class

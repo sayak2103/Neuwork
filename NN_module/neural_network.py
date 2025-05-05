@@ -6,7 +6,7 @@ class NN :
     #
     #contructor to initializde the neural network 
     #takes a list of layer objects as a parameter
-    def __init__(self, layers, loss='mse') : 
+    def __init__(self, layers, loss='mean_squared_error') : 
         self.num_layers=len(layers)
         self.layers=layers
         self.J=Losses().get_loss(loss)
