@@ -43,23 +43,24 @@ class Losses :
             return cost
 
         def get_grad(self, y_cap, y) :
-            m = len(y_cap) #number of samples
-            if(len(y.shape)==2) :
-                y = np.argmax(y, axis=1)
-            grad = y_cap.copy()
-            grad[range(m) , y] -= 1
-            grad /= m
+            #this is the combined derivative of softmax and cce
+            #m = len(y_cap) #number of samples
+            #if(len(y.shape)==2) :
+            #    y = np.argmax(y, axis=1)
+            #grad = y_cap.copy()
+            #grad[range(m) , y] -= 1
+            #grad /= m
+            #return grad
+            
+            classes = len(y_cap[0])
+            m = y_cap.shape[0]
+            #conversion of y into a aonehot vector if needed
+            if(len(y.shape)==1) :
+                y = np.eye(classes)[y]
+            grad = -y/y_cap
+            grad /= m #normalization
             return grad
             
-            ###
-            #classes = len(y_cap[0])
-            ##conversion of y into a aonehot vector if needed
-            #if(len(y.shape)==1) :
-            #    y = np.eye(classes)[y]
-            #grad = -y/y_cap
-            #grad /= m #normalization
-            #return grad
-            ###
 
     class Bce :
         #generally logarithm of maximum likelihood is used for binary classification along with sigmoi in the outout layer

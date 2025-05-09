@@ -33,13 +33,14 @@ class NN :
         return cost
     #
     def fit(self, X, Y, epochs=100, optimizer = 'adam', learning_rate = 0.001,decay = 0.0001, 
-            momentum = 0, epsilon = 1e-7, beta_1 = 0.9, beta_2 = 0.99, get_log=False) :
+            momentum = 0, epsilon = 1e-7, beta_1 = 0.9, beta_2 = 0.99, get_log=False , batch_size = -1) :
         if(optimizer == 'adam') : 
             self.opt = Adam(learning_rate, decay, epsilon, beta_1, beta_2)
         elif optimizer == 'sdg' :
             self.opt = SDG(learning_rate, decay, momentum)
         
         self.m = X.shape[0]
+        batch_size = self.m if batch_size == -1 else batch_size
         n = X.shape[1]
         self.layers[0].init_layer(n)
         self.l_rate=learning_rate
@@ -50,16 +51,23 @@ class NN :
         for i in range(epochs) :
             #self decaying learning rate, to aggresively learn at the begining, and slow down with time 
             self.l_rate = self.l_rate * (1. / (1 + (self.l_rate_decay*i)))
-            #forward propagation with the inputs
-            y_cap=self.predict(X)
-            #computation of the cost generated
-            cost=self.J.compute_cost(y_cap, Y) + self.regularization_cost()
-            if(get_log and i%(epochs/10)==0) :
-                print(f'epoch: {i}' + f'loss: {cost:.3f}'+'\n')
-            grad=self.J.get_grad(y_cap,Y) # m*nk m =no. of sample  / nk = units in last layer
-            self.layers[self.num_layers-1].backward_propagation(grad, self)
-            self.opt.pre_update_params()
-            for i in range(self.num_layers) :
-                self.opt.update_parameters(self.layers[i])
-            self.opt.post_update_params()
+            if(get_log and (i-1)%(epochs/10)==0) :
+                    print(f'epoch: {i-1}' + f' loss: {cost:.3f}'+'\n')
+            cost = 0
+            for j in range(self.m//batch_size) :
+                X_batch = X[j*batch_size:(j+1)*batch_size]
+                Y_batch = Y[j*batch_size:(j+1)*batch_size]
+                #forward propagation with the inputs
+                y_cap=self.predict(X_batch)
+                #computation of the cost generated
+                cost += self.J.compute_cost(y_cap, Y_batch) + self.regularization_cost()
+                #backward propagation
+                grad=self.J.get_grad(y_cap, Y[j*batch_size : (j+1)*batch_size]) # m*nk m =no. of sample  / nk = units in last layer
+                self.layers[self.num_layers-1].backward_propagation(grad, self)
+                self.opt.pre_update_params()
+                for i in range(self.num_layers) :
+                    self.opt.update_parameters(self.layers[i])
+                self.opt.post_update_params()
+            #
             
+        #
